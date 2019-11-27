@@ -15,12 +15,13 @@ class Notificaciones {
       });
   }
 
-  enviarNotificacion(titulo, descripcion, topico, tipo) {
+  enviarNotificacion(titulo, subtitle, descripcion, topico, tipo) {
     const topicoEnviar = topico === null ? "NewOrder" : topico;
 
     const mensaje = {
       data: {
         titulo: titulo,
+        subtitle: subtitle,
         descripcion: descripcion,
         tipo: tipo
       },
@@ -42,7 +43,7 @@ class Notificaciones {
       });
   }
 
-  enviarNotificacionAToken(titulo, descripcion, tipo, token) {
+  enviarNotificacionAToken(titulo, subtitulo, descripcion, tipo, token) {
     console.log("token");
     console.log(token);
     const mensaje = {

@@ -15,14 +15,26 @@ exports.registrarTopico = functions.firestore
 
 exports.enviarNotificacion = functions.firestore
   .document("Orders/{userId}")
-  .onUpdate(snapshot => {
-    console.log(snapshot);
+  .onUpdate(async (change, context) => {
+    const data = change.after.data();
+    console.log(data);
+    const previousData = change.before.data();
+    console.log(previousData);
+    const userId = context.params.userId;
+    const db = admin.firestore();
+    const snapshot = await db
+      .collection("Users")
+      .doc(userId)
+      .get();
+    const token = snapshot.data().tokenMessaging;
+
     const notificaciones = new Notificaciones.Notificaciones();
-    notificaciones.enviarNotificacion(
-      "Prueba",
-      "Prueba",
-      "NewOrder",
-      "Mensaje"
+    notificaciones.enviarNotificacionAToken(
+      `Nuevo pedido`,
+      `${123}`,
+      `Hemos recibido tu pedido satisfactoriamente, en breve lo procesaremos.`,
+      "",
+      token
     );
   });
 /*
