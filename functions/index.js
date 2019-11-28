@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const notificacionController = require("./components/Notifications/NotificacionesController");
@@ -14,28 +15,64 @@ exports.registrarTopico = functions.firestore
   .onCreate(notificacionController.creacionTokenController);
 
 exports.enviarNotificacion = functions.firestore
-  .document("Orders/{userId}")
+  .document("Orders/{id}")
   .onUpdate(async (change, context) => {
-    const data = change.after.data();
-    console.log(data);
     const previousData = change.before.data();
-    console.log(previousData);
-    const userId = context.params.userId;
+    const data = change.after.data();
+
+    const prevState = previousData.state;
+    const newState = data.state;
+
     const db = admin.firestore();
     const snapshot = await db
       .collection("Users")
-      .doc(userId)
+      .doc(change.after.data().uid)
       .get();
     const token = snapshot.data().tokenMessaging;
-
     const notificaciones = new Notificaciones.Notificaciones();
-    notificaciones.enviarNotificacionAToken(
-      `Nuevo pedido`,
-      `${123}`,
-      `Hemos recibido tu pedido satisfactoriamente, en breve lo procesaremos.`,
-      "",
-      token
-    );
+    if (prevState !== newState) {
+      if (newState == "En Elaboración") {
+        notificaciones.enviarNotificacionAToken(
+          `📋 Tu pedido a cambiado de estado`,
+          `En Elaboración`,
+          `Hemos confirmado el pedido y nos encontramos en proceso de elaboración 🍩😋`,
+          "",
+          token
+        );
+      } else if (newState == "En Camino") {
+        notificaciones.enviarNotificacionAToken(
+          `📋 Tu pedido a cambiado de estado`,
+          `En Camino`,
+          `¡Tu pedido esta en camino 🍩🚀! Ha sido enviado a tu dirección 😊`,
+          "",
+          token
+        );
+      } else if (newState == "Terminado") {
+        notificaciones.enviarNotificacionAToken(
+          `📋 Tu pedido a cambiado de estado`,
+          `Terminado`,
+          `¡Que disfrutes! 😍🍩 Ahora puedes pasar por nuestras instalaciones a retirar tu pedido 🚀`,
+          "",
+          token
+        );
+      } else if (newState == "Entregado") {
+        notificaciones.enviarNotificacionAToken(
+          `📋 Tu pedido a cambiado de estado`,
+          `Entregado`,
+          `¡Gracias por preferirnos! Que disfrutes de tus ricas donas 🍩😋`,
+          "",
+          token
+        );
+      } else if (newState == "Rechazado") {
+        notificaciones.enviarNotificacionAToken(
+          `📋 Tu pedido a cambiado de estado`,
+          `Rechazado`,
+          `¡Lo sentimos! Tu pedido ha sido rechazado.`,
+          "",
+          token
+        );
+      }
+    }
   });
 /*
 exports.test = functions.firestore

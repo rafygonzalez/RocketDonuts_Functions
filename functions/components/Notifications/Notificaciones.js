@@ -43,12 +43,13 @@ class Notificaciones {
       });
   }
 
-  enviarNotificacionAToken(titulo, subtitulo, descripcion, tipo, token) {
+  enviarNotificacionAToken(titulo, subtitle, descripcion, tipo, token) {
     console.log("token");
     console.log(token);
     const mensaje = {
       data: {
         titulo: titulo,
+        subtitle: subtitle,
         descripcion: descripcion,
         tipo: tipo
       },
