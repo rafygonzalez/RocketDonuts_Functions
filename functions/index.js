@@ -3,13 +3,14 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const notificacionController = require("./components/Notifications/NotificacionesController");
 const Notificaciones = require("./components/Notifications/Notificaciones");
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
+
+const geoCodeController = require("./components/GoogleMaps/geoCode_Controller");
 admin.initializeApp();
+
+exports.reverseGeoCode = functions.https.onCall((data, context) => {
+  return geoCodeController.getReverseGeoCode(data, context);
+});
+
 exports.registrarTopico = functions.firestore
   .document("Tokens/{id}")
   .onCreate(notificacionController.creacionTokenController);
